@@ -12,7 +12,7 @@ pub trait SpendingScannerRepository {
     async fn lifetime(&self) -> Result<Vec<MyLedger>>;
     async fn custom(
         &self,
-        start: chrono::NaiveDateTime,
-        end: chrono::NaiveDateTime,
+        start: chrono::NaiveDate,
+        end: chrono::NaiveDate,
     ) -> Result<Vec<MyLedger>>;
 }

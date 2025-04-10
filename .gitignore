@@ -1,1 +1,3 @@
 /target
+/.env
+/src/infrastructure/database/sqlite_data

@@ -4,7 +4,7 @@ use crate::domain::entities::debt_ledger::RecordDebtLedgerDto;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RecordDebtModel {
-    pub amount: f64,
+    pub amount: f32,
     pub category: String,
     pub description: String,
     pub who: String,
@@ -17,18 +17,18 @@ impl RecordDebtModel {
             category: self.category.to_owned(),
             description: self.description.to_owned(),
             who: self.who.to_owned(),
-            date: chrono::Utc::now().naive_utc(),
+            date: chrono::Utc::now().naive_utc().date().to_string(),
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RecordDebtWithDateModel {
-    pub amount: f64,
+    pub amount: f32,
     pub category: String,
     pub description: String,
     pub who: String,
-    pub date: chrono::NaiveDateTime,
+    pub date: chrono::NaiveDate,
 }
 
 impl RecordDebtWithDateModel {
@@ -38,7 +38,7 @@ impl RecordDebtWithDateModel {
             category: self.category.to_owned(),
             description: self.description.to_owned(),
             who: self.who.to_owned(),
-            date: self.date,
+            date: self.date.to_string(),
         }
     }
 }
@@ -46,15 +46,15 @@ impl RecordDebtWithDateModel {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DebtViewModel {
     pub id: i64,
-    pub amount: f64,
+    pub amount: f32,
     pub category: String,
     pub description: String,
     pub who: String,
-    pub date: chrono::NaiveDateTime,
+    pub date: chrono::NaiveDate,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WhosOweMeModel {
     pub who: String,
-    pub debts: f64,
+    pub debts: f32,
 }

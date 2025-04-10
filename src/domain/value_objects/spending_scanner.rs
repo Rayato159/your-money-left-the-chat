@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SpendingScannerModel {
     pub id: i64,
-    pub amount: f64,
+    pub amount: f32,
     pub category: String,
-    pub description: String,
-    pub date: chrono::NaiveDateTime,
+    pub description: Option<String>,
+    pub date: chrono::NaiveDate,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -18,7 +18,7 @@ pub enum SpendingScannerModelFilter {
     ThisYear,
     Lifetime,
     Custom {
-        start: chrono::NaiveDateTime,
-        end: chrono::NaiveDateTime,
+        start: chrono::NaiveDate,
+        end: chrono::NaiveDate,
     },
 }

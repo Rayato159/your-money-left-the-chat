@@ -1,4 +1,4 @@
-pub mod bitcoin;
+pub mod bitcoin_flow;
 pub mod cash_flow;
 pub mod cash_flow_visualizer;
 pub mod currencies_adapter;

@@ -26,7 +26,12 @@ rand = { version = "0.9" }
 async-trait = "0.1.88"
 mockall = "0.13.1"
 chrono = { version = "0.4", features = ["serde"] }
+dotenvy = "0.15"
+diesel = { version = "2.2.0", features = [
+    "sqlite",
+    "returning_clauses_for_sqlite_3_35",
+] }
 
 [[example]]
-name = "chad_ledger"
+name = "your_money_left_the_chat"
 path = "src/main.rs"

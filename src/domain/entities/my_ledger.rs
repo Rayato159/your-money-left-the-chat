@@ -1,12 +1,17 @@
-use crate::domain::value_objects::spending_scanner::SpendingScannerModel;
+use crate::{
+    domain::value_objects::spending_scanner::SpendingScannerModel,
+    infrastructure::database::schema::my_ledger,
+};
+use diesel::prelude::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Queryable, Identifiable, Selectable)]
+#[diesel(table_name = my_ledger)]
 pub struct MyLedger {
     pub id: i64,
-    pub amount: f64,
+    pub amount: f32,
     pub category: String,
-    pub description: String,
-    pub date: chrono::NaiveDateTime,
+    pub description: Option<String>,
+    pub date: chrono::NaiveDate,
 }
 
 impl MyLedger {
@@ -16,15 +21,16 @@ impl MyLedger {
             amount: self.amount,
             category: self.category.to_owned(),
             description: self.description.to_owned(),
-            date: self.date,
+            date: self.date.to_owned(),
         }
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Queryable, Insertable)]
+#[diesel(table_name = my_ledger)]
 pub struct RecordMyLedgerDto {
-    pub amount: f64,
+    pub amount: f32,
     pub category: String,
-    pub description: String,
-    pub date: chrono::NaiveDateTime,
+    pub description: Option<String>,
+    pub date: String,
 }
