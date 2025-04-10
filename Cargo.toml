@@ -1,0 +1,32 @@
+[package]
+name = "your-money-left-the-chat"
+authors = ["Ruangyot Nanchiang"]
+description = "An offline-first Rust-based financial AI stack powered by MCP (Model Context Protocol)"
+license = "MIT"
+readme = "README.md"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rmcp = { git = "https://github.com/modelcontextprotocol/rust-sdk", branch = "main", features = [
+    "server",
+    "transport-sse-server",
+    "transport-io",
+] }
+sysinfo = "0.34.2"
+schemars = { version = "0.8", optional = true }
+futures = "0.3"
+rand = { version = "0.9" }
+async-trait = "0.1.88"
+mockall = "0.13.1"
+chrono = { version = "0.4", features = ["serde"] }
+
+[[example]]
+name = "chad_ledger"
+path = "src/main.rs"
