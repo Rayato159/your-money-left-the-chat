@@ -1,13 +1,14 @@
+use rmcp::schemars;
 use serde::{Deserialize, Serialize};
 
 use crate::domain::entities::bitcoin_ledger::{BuyBitcoinDto, SellBitcoinDto};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct BuyBitcoin {
     pub amount: f32,
     pub price: f32,
     pub cost: f32,
-    pub date: chrono::NaiveDate,
+    pub date: String,
 }
 
 impl BuyBitcoin {
@@ -16,7 +17,7 @@ impl BuyBitcoin {
             amount: self.amount,
             price: self.price,
             cost: self.cost,
-            date: self.date.to_string(),
+            date: self.date.to_owned(),
         }
     }
 }
@@ -26,7 +27,7 @@ pub struct SellBitcoin {
     pub amount: f32,
     pub price: f32,
     pub cost: f32,
-    pub date: chrono::NaiveDate,
+    pub date: String,
 }
 
 impl SellBitcoin {
@@ -35,16 +36,16 @@ impl SellBitcoin {
             amount: self.amount,
             price: self.price,
             cost: self.cost,
-            date: self.date.to_string(),
+            date: self.date.to_owned(),
         }
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct ViewBitcoinLedger {
     pub amount: f32,
     pub price: f32,
     pub cost: f32,
     pub operation: String,
-    pub date: chrono::NaiveDate,
+    pub date: String,
 }

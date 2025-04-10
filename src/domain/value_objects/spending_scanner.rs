@@ -5,8 +5,8 @@ pub struct SpendingScannerModel {
     pub id: i64,
     pub amount: f32,
     pub category: String,
-    pub description: Option<String>,
-    pub date: chrono::NaiveDate,
+    pub description: String,
+    pub date: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -18,7 +18,7 @@ pub enum SpendingScannerModelFilter {
     ThisYear,
     Lifetime,
     Custom {
-        start: chrono::NaiveDate,
-        end: chrono::NaiveDate,
+        start: String,
+        end: String,
     },
 }

@@ -1,12 +1,13 @@
+use rmcp::schemars;
 use serde::{Deserialize, Serialize};
 
 use crate::domain::entities::my_ledger::RecordMyLedgerDto;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct RecordCashFlowModel {
     pub amount: f32,
     pub category: String,
-    pub description: Option<String>,
+    pub description: String,
 }
 
 impl RecordCashFlowModel {
@@ -20,12 +21,12 @@ impl RecordCashFlowModel {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct RecordCashFlowWithDateModel {
     pub amount: f32,
     pub category: String,
-    pub description: Option<String>,
-    pub date: chrono::NaiveDate,
+    pub description: String,
+    pub date: String,
 }
 
 impl RecordCashFlowWithDateModel {

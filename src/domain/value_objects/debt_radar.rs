@@ -28,7 +28,7 @@ pub struct RecordDebtWithDateModel {
     pub category: String,
     pub description: String,
     pub who: String,
-    pub date: chrono::NaiveDate,
+    pub date: String,
 }
 
 impl RecordDebtWithDateModel {
@@ -38,7 +38,7 @@ impl RecordDebtWithDateModel {
             category: self.category.to_owned(),
             description: self.description.to_owned(),
             who: self.who.to_owned(),
-            date: self.date.to_string(),
+            date: self.date.to_owned(),
         }
     }
 }
@@ -50,7 +50,7 @@ pub struct DebtViewModel {
     pub category: String,
     pub description: String,
     pub who: String,
-    pub date: chrono::NaiveDate,
+    pub date: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -22,7 +22,7 @@ impl DebtLedger {
             category: self.category.to_owned(),
             description: self.description.to_owned(),
             who: self.who.to_owned(),
-            date: self.date.to_owned().parse().unwrap(),
+            date: self.date.to_owned(),
         }
     }
 }

@@ -10,8 +10,8 @@ pub struct MyLedger {
     pub id: i64,
     pub amount: f32,
     pub category: String,
-    pub description: Option<String>,
-    pub date: chrono::NaiveDate,
+    pub description: String,
+    pub date: String,
 }
 
 impl MyLedger {
@@ -31,6 +31,6 @@ impl MyLedger {
 pub struct RecordMyLedgerDto {
     pub amount: f32,
     pub category: String,
-    pub description: Option<String>,
+    pub description: String,
     pub date: String,
 }
