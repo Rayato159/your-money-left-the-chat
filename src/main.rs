@@ -17,7 +17,7 @@ async fn main() -> Result<()> {
 
     tracing::info!("🦀 Let's roll your money.");
 
-    let db_pool = infrastructure::database::conn(&db_url)?;
+    let db_pool = infrastructure::database::conn(&db_path)?;
     let db_pool_artifact = Arc::new(db_pool);
 
     let cash_flow_service = CashFlow::new(Arc::clone(&db_pool_artifact))
