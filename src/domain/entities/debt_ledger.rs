@@ -6,7 +6,7 @@ use diesel::prelude::*;
 #[derive(Debug, Clone, Queryable, Identifiable, Selectable)]
 #[diesel(table_name = debt_ledger)]
 pub struct DebtLedger {
-    pub id: i64,
+    pub id: i32,
     pub amount: f32,
     pub category: String,
     pub description: String,

@@ -45,7 +45,7 @@ impl RecordDebtWithDateModel {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DebtViewModel {
-    pub id: i64,
+    pub id: i32,
     pub amount: f32,
     pub category: String,
     pub description: String,

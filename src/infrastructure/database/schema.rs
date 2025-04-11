@@ -2,7 +2,7 @@
 
 diesel::table! {
     bitcoin_buy_ledger (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         amount -> Float,
         price -> Float,
         cost -> Float,
@@ -12,7 +12,7 @@ diesel::table! {
 
 diesel::table! {
     bitcoin_sell_ledger (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         amount -> Float,
         price -> Float,
         cost -> Float,
@@ -22,10 +22,10 @@ diesel::table! {
 
 diesel::table! {
     debt_ledger (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         amount -> Float,
         category -> Text,
-        description -> Nullable<Text>,
+        description -> Text,
         who -> Text,
         date -> Text,
     }
@@ -33,10 +33,10 @@ diesel::table! {
 
 diesel::table! {
     my_ledger (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         amount -> Float,
         category -> Text,
-        description -> Nullable<Text>,
+        description -> Text,
         date -> Text,
     }
 }

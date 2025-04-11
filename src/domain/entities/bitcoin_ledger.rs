@@ -6,7 +6,7 @@ use crate::infrastructure::database::schema::{bitcoin_buy_ledger, bitcoin_sell_l
 #[derive(Debug, Clone, Queryable, Identifiable, Selectable)]
 #[diesel(table_name = bitcoin_buy_ledger)]
 pub struct BitcoinSellLedger {
-    pub id: i64,
+    pub id: i32,
     pub amount: f32,
     pub price: f32,
     pub cost: f32,
@@ -25,7 +25,7 @@ pub struct BuyBitcoinDto {
 #[derive(Debug, Clone, Queryable, Identifiable, Selectable)]
 #[diesel(table_name = bitcoin_sell_ledger)]
 pub struct BitcoinBuyLedger {
-    pub id: i64,
+    pub id: i32,
     pub amount: f32,
     pub price: f32,
     pub cost: f32,
