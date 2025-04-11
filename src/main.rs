@@ -7,7 +7,7 @@ use your_money_left_the_chat::{application::use_cases::cash_flow::CashFlow, infr
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let db_url = env::args().nth(1).expect("flag --db-path is required");
+    let db_path = env::args().nth(1).expect("flag --db-path is required");
 
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env().add_directive(tracing::Level::INFO.into()))
