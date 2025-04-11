@@ -1,4 +1,10 @@
+use rmcp::schemars;
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+pub struct SpendingScannerFilter {
+    pub filter: Range,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SpendingScannerModel {
@@ -9,16 +15,12 @@ pub struct SpendingScannerModel {
     pub date: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, schemars::JsonSchema)]
 #[serde(tag = "type", content = "value")]
-pub enum SpendingScannerModelFilter {
+pub enum Range {
     Today,
-    ThisWeek,
     ThisMonth,
     ThisYear,
     Lifetime,
-    Custom {
-        start: String,
-        end: String,
-    },
+    Custom { start: String, end: String },
 }

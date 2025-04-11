@@ -7,18 +7,19 @@ use crate::{
     infrastructure::database::{SqlitePoolSquad, schema::my_ledger},
 };
 
-pub struct CashFlowSQLite {
+#[derive(Clone)]
+pub struct CashFlowSqlite {
     pub db_pool: Arc<SqlitePoolSquad>,
 }
 
-impl CashFlowSQLite {
-    pub async fn new(db_pool: Arc<SqlitePoolSquad>) -> Self {
+impl CashFlowSqlite {
+    pub fn new(db_pool: Arc<SqlitePoolSquad>) -> Self {
         Self { db_pool }
     }
 }
 
 #[async_trait::async_trait]
-impl CashFlowRepository for CashFlowSQLite {
+impl CashFlowRepository for CashFlowSqlite {
     async fn record(&self, record_my_ledger_dto: RecordMyLedgerDto) -> Result<i32> {
         let conn = &mut self.db_pool.get()?;
 
