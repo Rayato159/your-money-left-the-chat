@@ -9,7 +9,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct CashFlowSqlite {
-    pub db_pool: Arc<SqlitePoolSquad>,
+    db_pool: Arc<SqlitePoolSquad>,
 }
 
 impl CashFlowSqlite {

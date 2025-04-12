@@ -11,7 +11,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct SpendingScannerSqlite {
-    pub db_pool: Arc<SqlitePoolSquad>,
+    db_pool: Arc<SqlitePoolSquad>,
 }
 
 impl SpendingScannerSqlite {

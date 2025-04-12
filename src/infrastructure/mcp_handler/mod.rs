@@ -8,10 +8,12 @@ use serde_json::json;
 
 use crate::{
     application::use_cases::{
-        cash_flow::CashFlowUseCase, spending_scanner::SpendingScannerUseCase,
+        cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
+        spending_scanner::SpendingScannerUseCase,
     },
     domain::value_objects::{
         cash_flow::{RecordCashFlowModel, RecordCashFlowWithDateModel},
+        debt_radar::{PaidDebtModel, RecordDebtModel, WhoOwesMeModel},
         spending_scanner::SpendingScannerFilter,
     },
 };
@@ -20,6 +22,7 @@ use crate::{
 pub struct MCPHandler {
     cash_flow_use_case: Arc<CashFlowUseCase>,
     spending_scanner_use_case: Arc<SpendingScannerUseCase>,
+    debt_radar_use_case: Arc<DebtRadarUseCase>,
 }
 
 #[tool(tool_box)]
@@ -27,10 +30,12 @@ impl MCPHandler {
     pub fn new(
         cash_flow_use_case: Arc<CashFlowUseCase>,
         spending_scanner_use_case: Arc<SpendingScannerUseCase>,
+        debt_radar_use_case: Arc<DebtRadarUseCase>,
     ) -> Self {
         Self {
             cash_flow_use_case,
             spending_scanner_use_case,
+            debt_radar_use_case,
         }
     }
 
@@ -80,6 +85,79 @@ impl MCPHandler {
         match self
             .spending_scanner_use_case
             .scan(spending_scanner_filter)
+            .await
+        {
+            Ok(results) => {
+                if let Ok(res_json) = Content::json(results) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Record a debt ledger")]
+    pub async fn record_debt(
+        &self,
+        #[tool(aggr)] record_debt_model: RecordDebtModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self.debt_radar_use_case.record(record_debt_model).await {
+            Ok(id) => Ok(CallToolResult::success(vec![Content::text(format!(
+                "Debt recorded successfully: id: {}",
+                id
+            ))])),
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Record a paid debt")]
+    pub async fn record_paid_debt(
+        &self,
+        #[tool(aggr)] paid_debt_model: PaidDebtModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .debt_radar_use_case
+            .record_paid_debt(paid_debt_model)
+            .await
+        {
+            Ok(id) => Ok(CallToolResult::success(vec![Content::text(format!(
+                "Paid debt recorded successfully: id: {}",
+                id
+            ))])),
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "See who owes your money and how much")]
+    pub async fn view_all_debts(&self) -> Result<CallToolResult, McpError> {
+        match self.debt_radar_use_case.view_all().await {
+            Ok(results) => {
+                if let Ok(res_json) = Content::json(results) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "See how much that person owes you")]
+    pub async fn how_that_bro_owe_you(
+        &self,
+        #[tool(aggr)] who_owes_you_model: WhoOwesMeModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .debt_radar_use_case
+            .view_by_that_bro(&who_owes_you_model.who)
             .await
         {
             Ok(results) => {

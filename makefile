@@ -10,3 +10,6 @@ build-release:
 let-go:
 	chmod +x ./target/release/examples/your_money_left_the_chat
 	chmod +x ./src/infrastructure/database/sqlite_data/database.db
+
+tests:
+	cargo tarpaulin --out html
