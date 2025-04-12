@@ -1,4 +1,10 @@
-# 💸 Your Money Left The Chat
+# Your Money Left The Chat
+
+## 📀 Demo Video
+
+[![Demo Video](./screenshots/demo.png)](https://youtu.be/1X9WQuZ4N5w)
+
+## TL;DR
 
 A Rust-native 🦀, SQLite-backed, LLM-powered financial tracking system
 
