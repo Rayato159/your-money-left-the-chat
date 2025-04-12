@@ -101,6 +101,32 @@ impl MCPHandler {
         }
     }
 
+    #[tool(
+        description = "Visualize your spending by category: today, this month, this year, or lifetime."
+    )]
+    pub async fn spending_visualizer(
+        &self,
+        #[tool(aggr)] spending_scanner_filter: SpendingScannerFilter,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .spending_scanner_use_case
+            .visualize(spending_scanner_filter)
+            .await
+        {
+            Ok(results) => {
+                if let Ok(res_json) = Content::json(results) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
     #[tool(description = "Record a debt ledger")]
     pub async fn record_debt(
         &self,
