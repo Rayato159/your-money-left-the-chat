@@ -8,10 +8,11 @@ use serde_json::json;
 
 use crate::{
     application::use_cases::{
-        cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
+        bitcoin_flow::BitcoinFlowUseCase, cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
         spending_scanner::SpendingScannerUseCase,
     },
     domain::value_objects::{
+        bitcoin_flow::{BuyBitcoinModel, SellBitcoinModel},
         cash_flow::{RecordCashFlowModel, RecordCashFlowWithDateModel},
         debt_radar::{PaidDebtModel, RecordDebtModel, WhoOwesMeModel},
         spending_scanner::SpendingScannerFilter,
@@ -23,6 +24,7 @@ pub struct MCPHandler {
     cash_flow_use_case: Arc<CashFlowUseCase>,
     spending_scanner_use_case: Arc<SpendingScannerUseCase>,
     debt_radar_use_case: Arc<DebtRadarUseCase>,
+    bitcoin_flow_use_case: Arc<BitcoinFlowUseCase>,
 }
 
 #[tool(tool_box)]
@@ -31,11 +33,13 @@ impl MCPHandler {
         cash_flow_use_case: Arc<CashFlowUseCase>,
         spending_scanner_use_case: Arc<SpendingScannerUseCase>,
         debt_radar_use_case: Arc<DebtRadarUseCase>,
+        bitcoin_flow_use_case: Arc<BitcoinFlowUseCase>,
     ) -> Self {
         Self {
             cash_flow_use_case,
             spending_scanner_use_case,
             debt_radar_use_case,
+            bitcoin_flow_use_case,
         }
     }
 
@@ -186,6 +190,76 @@ impl MCPHandler {
             .view_by_that_bro(&who_owes_you_model.who)
             .await
         {
+            Ok(results) => {
+                if let Ok(res_json) = Content::json(results) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Record buy bitcoin ledger")]
+    pub async fn record_buy_bitcoin_ledger(
+        &self,
+        #[tool(aggr)] buy_bitcoin_model: BuyBitcoinModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .bitcoin_flow_use_case
+            .record_buy(buy_bitcoin_model)
+            .await
+        {
+            Ok(id) => Ok(CallToolResult::success(vec![Content::text(format!(
+                "Buy bitcoin ledger recorded successfully: id: {}",
+                id
+            ))])),
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Record sell bitcoin ledger")]
+    pub async fn record_sell_bitcoin_ledger(
+        &self,
+        #[tool(aggr)] sell_bitcoin_model: SellBitcoinModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .bitcoin_flow_use_case
+            .record_sell(sell_bitcoin_model)
+            .await
+        {
+            Ok(id) => Ok(CallToolResult::success(vec![Content::text(format!(
+                "Buy bitcoin ledger recorded successfully: id: {}",
+                id
+            ))])),
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "View all buy bitcoin ledger")]
+    pub async fn view_all_buy_bitcoin_ledger(&self) -> Result<CallToolResult, McpError> {
+        match self.bitcoin_flow_use_case.view_all_buy().await {
+            Ok(results) => {
+                if let Ok(res_json) = Content::json(results) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "View all sell bitcoin ledger")]
+    pub async fn view_all_sell_bitcoin_ledger(&self) -> Result<CallToolResult, McpError> {
+        match self.bitcoin_flow_use_case.view_all_sell().await {
             Ok(results) => {
                 if let Ok(res_json) = Content::json(results) {
                     Ok(CallToolResult::success(vec![res_json]))

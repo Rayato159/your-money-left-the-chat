@@ -4,14 +4,14 @@ use serde::{Deserialize, Serialize};
 use crate::domain::entities::bitcoin_ledger::{BuyBitcoinDto, SellBitcoinDto};
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct BuyBitcoin {
+pub struct BuyBitcoinModel {
     pub amount: f32,
     pub price: f32,
     pub cost: f32,
     pub date: String,
 }
 
-impl BuyBitcoin {
+impl BuyBitcoinModel {
     pub fn to_dto(&self) -> BuyBitcoinDto {
         BuyBitcoinDto {
             amount: self.amount,
@@ -22,15 +22,15 @@ impl BuyBitcoin {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SellBitcoin {
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+pub struct SellBitcoinModel {
     pub amount: f32,
     pub price: f32,
     pub cost: f32,
     pub date: String,
 }
 
-impl SellBitcoin {
+impl SellBitcoinModel {
     pub fn to_dto(&self) -> SellBitcoinDto {
         SellBitcoinDto {
             amount: self.amount,
@@ -42,7 +42,8 @@ impl SellBitcoin {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
-pub struct ViewBitcoinLedger {
+pub struct ViewBitcoinLedgerModel {
+    pub id: i32,
     pub amount: f32,
     pub price: f32,
     pub cost: f32,

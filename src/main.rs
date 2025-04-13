@@ -5,15 +5,15 @@ use rmcp::{ServiceExt, transport::stdio};
 use tracing_subscriber::{self, EnvFilter};
 use your_money_left_the_chat::{
     application::use_cases::{
-        cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
+        bitcoin_flow::BitcoinFlowUseCase, cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
         spending_scanner::SpendingScannerUseCase,
     },
     infrastructure::{
         database::{
             conn,
             repositories::{
-                cash_flow::CashFlowSqlite, debt_radar::DebtRadarSqlite,
-                spending_scanner::SpendingScannerSqlite,
+                bitcoin_flow::BitcoinFlowSqlite, cash_flow::CashFlowSqlite,
+                debt_radar::DebtRadarSqlite, spending_scanner::SpendingScannerSqlite,
             },
         },
         mcp_handler::MCPHandler,
@@ -50,10 +50,16 @@ async fn main() -> Result<()> {
         DebtRadarUseCase::new(Arc::new(debt_radar_repository))
     };
 
+    let bitcoin_flow_use_case = {
+        let bitcoin_flow_repository = BitcoinFlowSqlite::new(Arc::clone(&db_pool_artifact));
+        BitcoinFlowUseCase::new(Arc::new(bitcoin_flow_repository))
+    };
+
     let service = MCPHandler::new(
         Arc::new(cash_flow_use_case),
         Arc::new(spending_scanner_use_case),
         Arc::new(debt_radar_use_case),
+        Arc::new(bitcoin_flow_use_case),
     )
     .serve(stdio())
     .await
