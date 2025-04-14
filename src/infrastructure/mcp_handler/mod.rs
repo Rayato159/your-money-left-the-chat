@@ -160,7 +160,7 @@ impl MCPHandler {
         }
     }
 
-    #[tool(description = "Add monthly spending into the list (due_date format: MM-DD)")]
+    #[tool(description = "Add monthly spending into the list (due_date format: DD)")]
     pub async fn add_monthly_spending(
         &self,
         #[tool(aggr)] add_monthly_spending_model: AddMonthlySpendingModel,

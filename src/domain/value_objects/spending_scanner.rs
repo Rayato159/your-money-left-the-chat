@@ -31,15 +31,15 @@ pub enum Range {
 pub struct AddMonthlySpendingModel {
     pub title: String,
     pub amount: f32,
-    pub due_date: String,
+    pub due_date: String, // DD
 }
 
 impl AddMonthlySpendingModel {
     pub fn to_dto(&self) -> AddMonthlySpendingDto {
         AddMonthlySpendingDto {
-            title: self.title.clone(),
+            title: self.title.to_owned(),
             amount: self.amount,
-            due_date: self.due_date.clone(),
+            due_date: self.due_date.to_owned(),
         }
     }
 }
