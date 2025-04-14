@@ -22,7 +22,7 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
 - 📆 **Smart Summaries**  
   Daily, monthly, yearly breakdowns, including category-based analytics
 
-- 📊 **Graph View**  
+- 📊 **Graph View (Only Claude Can Do THIS!!!)**  
   Visualize how much of your soul goes into food every month
 
 - 📉 **Tax Calculation**  
@@ -30,6 +30,9 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
 
 - 💀 **Debt Management**  
   Track who owes you money and who’s ghosting you
+
+- 🪙 **Bitcoin Tracking**  
+  Track your Bitcoin investments and their value over time
 
 - 🔒 **Offline & Local-First**  
   100% yours – no internet, no accounts, no surveillance capitalism
