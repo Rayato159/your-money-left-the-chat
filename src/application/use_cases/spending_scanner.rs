@@ -3,7 +3,10 @@ use std::{collections::HashMap, sync::Arc};
 
 use crate::domain::{
     repositories::spending_scanner::SpendingScannerRepository,
-    value_objects::spending_scanner::{Range, SpendingScannerFilter, SpendingScannerModel},
+    value_objects::spending_scanner::{
+        AddMonthlySpendingModel, MonthlySpendingModel, Range, RemoveMonthlySpendingModel,
+        SpendingScannerFilter, SpendingScannerModel,
+    },
 };
 
 #[derive(Clone)]
@@ -69,6 +72,38 @@ impl SpendingScannerUseCase {
 
         Ok(map_by_category)
     }
+
+    pub async fn view_all_monthly_spending_list(&self) -> Result<Vec<MonthlySpendingModel>> {
+        let entities = self
+            .spending_scanner_repository
+            .view_all_monthly_spending()
+            .await?;
+
+        let results = entities
+            .iter()
+            .map(|r| r.to_model())
+            .collect::<Vec<MonthlySpendingModel>>();
+
+        Ok(results)
+    }
+
+    pub async fn add_monthly_spending(
+        &self,
+        add_monthly_spending_model: AddMonthlySpendingModel,
+    ) -> Result<i32> {
+        self.spending_scanner_repository
+            .add_monthly_spending(add_monthly_spending_model.to_dto())
+            .await
+    }
+
+    pub async fn remove_monthly_spending(
+        &self,
+        remove_monthly_spending_model: RemoveMonthlySpendingModel,
+    ) -> Result<()> {
+        self.spending_scanner_repository
+            .remove_monthly_spending(remove_monthly_spending_model.id)
+            .await
+    }
 }
 
 #[cfg(test)]
@@ -78,9 +113,11 @@ mod tests {
     use crate::{
         application::use_cases::spending_scanner::SpendingScannerUseCase,
         domain::{
-            entities::my_ledger::MyLedger,
+            entities::{monthly_spending::MonthlySpending, my_ledger::MyLedger},
             repositories::spending_scanner::MockSpendingScannerRepository,
-            value_objects::spending_scanner::{Range, SpendingScannerFilter},
+            value_objects::spending_scanner::{
+                AddMonthlySpendingModel, Range, RemoveMonthlySpendingModel, SpendingScannerFilter,
+            },
         },
     };
 
@@ -185,5 +222,81 @@ mod tests {
 
         assert_eq!(*lunch, 300.0);
         assert_eq!(*coffee, 150.0);
+    }
+
+    #[tokio::test]
+    async fn test_view_all_monthly_spending_success() {
+        let mut mock_spending_scanner_repository = MockSpendingScannerRepository::new();
+
+        mock_spending_scanner_repository
+            .expect_view_all_monthly_spending()
+            .returning(|| {
+                Box::pin(async {
+                    Ok(vec![
+                        MonthlySpending {
+                            id: 1,
+                            title: "Test 1".to_string(),
+                            amount: 100.0,
+                            due_date: "2023-10-01".to_string(),
+                        },
+                        MonthlySpending {
+                            id: 2,
+                            title: "Test 2".to_string(),
+                            amount: 200.0,
+                            due_date: "2023-10-01".to_string(),
+                        },
+                    ])
+                })
+            });
+
+        let spending_scanner_use_case =
+            SpendingScannerUseCase::new(Arc::new(mock_spending_scanner_repository));
+
+        let result = spending_scanner_use_case
+            .view_all_monthly_spending_list()
+            .await;
+
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().len(), 2);
+    }
+
+    #[tokio::test]
+    async fn test_add_monthly_spending_success() {
+        let mut mock_spending_scanner_repository = MockSpendingScannerRepository::new();
+
+        mock_spending_scanner_repository
+            .expect_add_monthly_spending()
+            .returning(|_| Box::pin(async { Ok(1) }));
+
+        let spending_scanner_use_case =
+            SpendingScannerUseCase::new(Arc::new(mock_spending_scanner_repository));
+
+        let result = spending_scanner_use_case
+            .add_monthly_spending(AddMonthlySpendingModel {
+                title: "Test".to_string(),
+                amount: 100.0,
+                due_date: "2023-10-01".to_string(),
+            })
+            .await;
+
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_remove_monthly_spending_success() {
+        let mut mock_spending_scanner_repository = MockSpendingScannerRepository::new();
+
+        mock_spending_scanner_repository
+            .expect_remove_monthly_spending()
+            .returning(|_| Box::pin(async { Ok(()) }));
+
+        let spending_scanner_use_case =
+            SpendingScannerUseCase::new(Arc::new(mock_spending_scanner_repository));
+
+        let result = spending_scanner_use_case
+            .remove_monthly_spending(RemoveMonthlySpendingModel { id: 1 })
+            .await;
+
+        assert!(result.is_ok());
     }
 }

@@ -32,6 +32,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    monthly_spending (id) {
+        id -> Integer,
+        title -> Text,
+        amount -> Float,
+        due_date -> Text,
+    }
+}
+
+diesel::table! {
     my_ledger (id) {
         id -> Integer,
         amount -> Float,
@@ -53,6 +62,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     bitcoin_buy_ledger,
     bitcoin_sell_ledger,
     debt_ledger,
+    monthly_spending,
     my_ledger,
     tax_deductions_list,
 );

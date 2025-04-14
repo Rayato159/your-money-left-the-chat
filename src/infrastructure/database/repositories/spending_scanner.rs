@@ -1,12 +1,23 @@
+use anyhow::Result;
 use chrono::Local;
-use diesel::prelude::*;
+use diesel::{
+    dsl::{delete, insert_into},
+    prelude::*,
+};
 use std::sync::Arc;
 
 use crate::{
     domain::{
-        entities::my_ledger::MyLedger, repositories::spending_scanner::SpendingScannerRepository,
+        entities::{
+            monthly_spending::{AddMonthlySpendingDto, MonthlySpending},
+            my_ledger::MyLedger,
+        },
+        repositories::spending_scanner::SpendingScannerRepository,
     },
-    infrastructure::database::{SqlitePoolSquad, schema::my_ledger},
+    infrastructure::database::{
+        SqlitePoolSquad,
+        schema::{monthly_spending, my_ledger},
+    },
 };
 
 #[derive(Clone)]
@@ -22,7 +33,7 @@ impl SpendingScannerSqlite {
 
 #[async_trait::async_trait]
 impl SpendingScannerRepository for SpendingScannerSqlite {
-    async fn today(&self) -> anyhow::Result<Vec<MyLedger>> {
+    async fn today(&self) -> Result<Vec<MyLedger>> {
         let conn = &mut self.db_pool.get()?;
         let today_prefix = Local::now().format("%Y-%m-%d").to_string(); // e.g. "2025-04-11"
 
@@ -34,7 +45,7 @@ impl SpendingScannerRepository for SpendingScannerSqlite {
         Ok(result)
     }
 
-    async fn this_month(&self) -> anyhow::Result<Vec<MyLedger>> {
+    async fn this_month(&self) -> Result<Vec<MyLedger>> {
         let conn = &mut self.db_pool.get()?;
         let this_month_prefix = Local::now().format("%Y-%m").to_string(); // e.g. "2025-04"
 
@@ -46,7 +57,7 @@ impl SpendingScannerRepository for SpendingScannerSqlite {
         Ok(result)
     }
 
-    async fn this_year(&self) -> anyhow::Result<Vec<MyLedger>> {
+    async fn this_year(&self) -> Result<Vec<MyLedger>> {
         let conn = &mut self.db_pool.get()?;
         let this_year_prefix = Local::now().format("%Y").to_string(); // e.g. "2025"
 
@@ -58,7 +69,7 @@ impl SpendingScannerRepository for SpendingScannerSqlite {
         Ok(result)
     }
 
-    async fn lifetime(&self) -> anyhow::Result<Vec<MyLedger>> {
+    async fn lifetime(&self) -> Result<Vec<MyLedger>> {
         let conn = &mut self.db_pool.get()?;
 
         let result = my_ledger::table
@@ -68,7 +79,7 @@ impl SpendingScannerRepository for SpendingScannerSqlite {
         Ok(result)
     }
 
-    async fn custom(&self, start: String, end: String) -> anyhow::Result<Vec<MyLedger>> {
+    async fn custom(&self, start: String, end: String) -> Result<Vec<MyLedger>> {
         let conn = &mut self.db_pool.get()?;
 
         let result = my_ledger::table
@@ -77,5 +88,39 @@ impl SpendingScannerRepository for SpendingScannerSqlite {
             .load::<MyLedger>(conn)?;
 
         Ok(result)
+    }
+
+    async fn view_all_monthly_spending(&self) -> Result<Vec<MonthlySpending>> {
+        let conn = &mut self.db_pool.get()?;
+
+        let result = monthly_spending::table
+            .order(monthly_spending::due_date.asc())
+            .load::<MonthlySpending>(conn)?;
+
+        Ok(result)
+    }
+
+    async fn add_monthly_spending(
+        &self,
+        add_monthly_spending_model: AddMonthlySpendingDto,
+    ) -> Result<i32> {
+        let conn = &mut self.db_pool.get()?;
+
+        let result_id = insert_into(monthly_spending::table)
+            .values(&add_monthly_spending_model)
+            .returning(monthly_spending::id)
+            .get_result::<i32>(conn)?;
+
+        Ok(result_id)
+    }
+
+    async fn remove_monthly_spending(&self, id: i32) -> Result<()> {
+        let conn = &mut self.db_pool.get()?;
+
+        delete(monthly_spending::table)
+            .filter(monthly_spending::id.eq(id))
+            .execute(conn)?;
+
+        Ok(())
     }
 }

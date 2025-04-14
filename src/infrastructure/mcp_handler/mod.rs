@@ -15,7 +15,9 @@ use crate::{
         bitcoin_flow::{BuyBitcoinModel, SellBitcoinModel},
         cash_flow::{RecordCashFlowModel, RecordCashFlowWithDateModel},
         debt_radar::{PaidDebtModel, RecordDebtModel, WhoOwesMeModel},
-        spending_scanner::SpendingScannerFilter,
+        spending_scanner::{
+            AddMonthlySpendingModel, RemoveMonthlySpendingModel, SpendingScannerFilter,
+        },
         tax_simulator::{
             AddTaxDeductionsListModel, RemoveTaxDeductionsListModel, TaxSimulateRequestModel,
         },
@@ -133,6 +135,62 @@ impl MCPHandler {
                     ))
                 }
             }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "View all monthly spending list")]
+    pub async fn view_all_monthly_spending_list(&self) -> Result<CallToolResult, McpError> {
+        match self
+            .spending_scanner_use_case
+            .view_all_monthly_spending_list()
+            .await
+        {
+            Ok(result) => {
+                if let Ok(res_json) = Content::json(result) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Add monthly spending into the list (due_date format: MM-DD)")]
+    pub async fn add_monthly_spending(
+        &self,
+        #[tool(aggr)] add_monthly_spending_model: AddMonthlySpendingModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .spending_scanner_use_case
+            .add_monthly_spending(add_monthly_spending_model)
+            .await
+        {
+            Ok(id) => Ok(CallToolResult::success(vec![Content::text(format!(
+                "New monthly spending list added successfully: id: {}",
+                id
+            ))])),
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Remove monthly spending from the list")]
+    pub async fn remove_monthly_spending(
+        &self,
+        #[tool(aggr)] remove_monthly_spending_model: RemoveMonthlySpendingModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .spending_scanner_use_case
+            .remove_monthly_spending(remove_monthly_spending_model)
+            .await
+        {
+            Ok(_) => Ok(CallToolResult::success(vec![Content::text(
+                "Remove monthly spending from the list successfully",
+            )])),
             Err(e) => Err(McpError::internal_error(e.to_string(), None)),
         }
     }

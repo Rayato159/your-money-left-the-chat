@@ -1,6 +1,8 @@
 use rmcp::schemars;
 use serde::{Deserialize, Serialize};
 
+use crate::domain::entities::monthly_spending::AddMonthlySpendingDto;
+
 #[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct SpendingScannerFilter {
     pub filter: Range,
@@ -23,4 +25,34 @@ pub enum Range {
     ThisYear,
     Lifetime,
     Custom { start: String, end: String },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+pub struct AddMonthlySpendingModel {
+    pub title: String,
+    pub amount: f32,
+    pub due_date: String,
+}
+
+impl AddMonthlySpendingModel {
+    pub fn to_dto(&self) -> AddMonthlySpendingDto {
+        AddMonthlySpendingDto {
+            title: self.title.clone(),
+            amount: self.amount,
+            due_date: self.due_date.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
+pub struct RemoveMonthlySpendingModel {
+    pub id: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonthlySpendingModel {
+    pub id: i32,
+    pub title: String,
+    pub amount: f32,
+    pub due_date: String,
 }

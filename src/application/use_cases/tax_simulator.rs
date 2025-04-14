@@ -54,12 +54,9 @@ impl TaxSimulatorUseCase {
         &self,
         add_tax_deduction_list_model: AddTaxDeductionsListModel,
     ) -> Result<i32> {
-        let result_id = self
-            .tax_simulator_repository
+        self.tax_simulator_repository
             .add_tax_deduction_list(add_tax_deduction_list_model.to_dto())
-            .await?;
-
-        Ok(result_id)
+            .await
     }
 
     pub async fn remove_tax_deduction_list(
