@@ -14,7 +14,7 @@ impl RecordCashFlowModel {
     pub fn to_dto(&self) -> RecordMyLedgerDto {
         RecordMyLedgerDto {
             amount: self.amount,
-            category: self.category.to_owned(),
+            category: self.category.to_owned().to_uppercase(),
             description: self.description.to_owned(),
             date: chrono::Utc::now().naive_utc().date().to_string(),
         }
@@ -33,7 +33,7 @@ impl RecordCashFlowWithDateModel {
     pub fn to_dto(&self) -> RecordMyLedgerDto {
         RecordMyLedgerDto {
             amount: self.amount,
-            category: self.category.to_owned(),
+            category: self.category.to_owned().to_uppercase(),
             description: self.description.to_owned(),
             date: self.date.to_string(),
         }

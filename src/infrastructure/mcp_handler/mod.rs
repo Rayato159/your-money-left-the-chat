@@ -9,13 +9,16 @@ use serde_json::json;
 use crate::{
     application::use_cases::{
         bitcoin_flow::BitcoinFlowUseCase, cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
-        spending_scanner::SpendingScannerUseCase,
+        spending_scanner::SpendingScannerUseCase, tax_simulator::TaxSimulatorUseCase,
     },
     domain::value_objects::{
         bitcoin_flow::{BuyBitcoinModel, SellBitcoinModel},
         cash_flow::{RecordCashFlowModel, RecordCashFlowWithDateModel},
         debt_radar::{PaidDebtModel, RecordDebtModel, WhoOwesMeModel},
         spending_scanner::SpendingScannerFilter,
+        tax_simulator::{
+            AddTaxDeductionsListModel, RemoveTaxDeductionsListModel, TaxSimulateRequestModel,
+        },
     },
 };
 
@@ -25,6 +28,7 @@ pub struct MCPHandler {
     spending_scanner_use_case: Arc<SpendingScannerUseCase>,
     debt_radar_use_case: Arc<DebtRadarUseCase>,
     bitcoin_flow_use_case: Arc<BitcoinFlowUseCase>,
+    tax_simulator_use_case: Arc<TaxSimulatorUseCase>,
 }
 
 #[tool(tool_box)]
@@ -34,12 +38,14 @@ impl MCPHandler {
         spending_scanner_use_case: Arc<SpendingScannerUseCase>,
         debt_radar_use_case: Arc<DebtRadarUseCase>,
         bitcoin_flow_use_case: Arc<BitcoinFlowUseCase>,
+        tax_simulator_use_case: Arc<TaxSimulatorUseCase>,
     ) -> Self {
         Self {
             cash_flow_use_case,
             spending_scanner_use_case,
             debt_radar_use_case,
             bitcoin_flow_use_case,
+            tax_simulator_use_case,
         }
     }
 
@@ -187,7 +193,7 @@ impl MCPHandler {
     ) -> Result<CallToolResult, McpError> {
         match self
             .debt_radar_use_case
-            .view_by_that_bro(&who_owes_you_model.who)
+            .view_by_that_bro(who_owes_you_model)
             .await
         {
             Ok(results) => {
@@ -262,6 +268,86 @@ impl MCPHandler {
         match self.bitcoin_flow_use_case.view_all_sell().await {
             Ok(results) => {
                 if let Ok(res_json) = Content::json(results) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "View all tax deductions list")]
+    pub async fn view_all_tax_deductions_list(&self) -> Result<CallToolResult, McpError> {
+        match self
+            .tax_simulator_use_case
+            .view_all_tax_deductions_list()
+            .await
+        {
+            Ok(results) => {
+                if let Ok(res_json) = Content::json(results) {
+                    Ok(CallToolResult::success(vec![res_json]))
+                } else {
+                    Err(McpError::internal_error(
+                        "Failed to convert results to JSON".to_string(),
+                        None,
+                    ))
+                }
+            }
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Add tax deduction list")]
+    pub async fn add_tax_deduction_list(
+        &self,
+        #[tool(aggr)] add_tax_deduction_list_model: AddTaxDeductionsListModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .tax_simulator_use_case
+            .add_tax_deduction_list(add_tax_deduction_list_model)
+            .await
+        {
+            Ok(id) => Ok(CallToolResult::success(vec![Content::text(format!(
+                "Add tax deduction list successfully: id: {}",
+                id
+            ))])),
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Remove tax deduction list")]
+    pub async fn remove_tax_deduction_list(
+        &self,
+        #[tool(aggr)] remove_tax_deduction_list_model: RemoveTaxDeductionsListModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .tax_simulator_use_case
+            .remove_tax_deduction_list(remove_tax_deduction_list_model)
+            .await
+        {
+            Ok(_) => Ok(CallToolResult::success(vec![Content::text(
+                "Remove tax deduction list successfully: id:",
+            )])),
+            Err(e) => Err(McpError::internal_error(e.to_string(), None)),
+        }
+    }
+
+    #[tool(description = "Calculate, simulate tax for a given year")]
+    pub async fn simulate_tax(
+        &self,
+        #[tool(aggr)] tax_simulate_request_model: TaxSimulateRequestModel,
+    ) -> Result<CallToolResult, McpError> {
+        match self
+            .tax_simulator_use_case
+            .simulate(tax_simulate_request_model)
+            .await
+        {
+            Ok(result) => {
+                if let Ok(res_json) = Content::json(result) {
                     Ok(CallToolResult::success(vec![res_json]))
                 } else {
                     Err(McpError::internal_error(

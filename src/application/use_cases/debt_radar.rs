@@ -4,7 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 use crate::domain::{
     entities::debt_ledger::DebtLedger,
     repositories::debt_radar::DebtRadarRepository,
-    value_objects::debt_radar::{DebtViewModel, PaidDebtModel, RecordDebtModel},
+    value_objects::debt_radar::{DebtViewModel, PaidDebtModel, RecordDebtModel, WhoOwesMeModel},
 };
 
 #[derive(Clone)]
@@ -52,8 +52,15 @@ impl DebtRadarUseCase {
         Ok(debt_view_models)
     }
 
-    pub async fn view_by_that_bro(&self, who: &str) -> Result<Option<DebtViewModel>> {
-        let debt_entity = match self.debt_radar_repository.view_by_that_bro(who).await {
+    pub async fn view_by_that_bro(
+        &self,
+        who_owes_me_model: WhoOwesMeModel,
+    ) -> Result<Option<DebtViewModel>> {
+        let debt_entity = match self
+            .debt_radar_repository
+            .view_by_that_bro(&who_owes_me_model.who)
+            .await
+        {
             Ok(debt_entity) => debt_entity,
             Err(_) => return Ok(None),
         };
@@ -62,7 +69,7 @@ impl DebtRadarUseCase {
 
         let debt_view_model = DebtViewModel {
             amount: total_debt,
-            who: who.to_string(),
+            who: who_owes_me_model.who,
         };
 
         Ok(Some(debt_view_model))
@@ -169,7 +176,11 @@ mod tests {
 
         let debt_radar_use_case = DebtRadarUseCase::new(Arc::new(mock_debt_radar_repository));
 
-        let result = debt_radar_use_case.view_by_that_bro("Test User").await;
+        let result = debt_radar_use_case
+            .view_by_that_bro(WhoOwesMeModel {
+                who: "Test User".to_string(),
+            })
+            .await;
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap().unwrap().amount, 500.0);

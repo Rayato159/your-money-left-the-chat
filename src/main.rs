@@ -6,7 +6,7 @@ use tracing_subscriber::{self, EnvFilter};
 use your_money_left_the_chat::{
     application::use_cases::{
         bitcoin_flow::BitcoinFlowUseCase, cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
-        spending_scanner::SpendingScannerUseCase,
+        spending_scanner::SpendingScannerUseCase, tax_simulator::TaxSimulatorUseCase,
     },
     infrastructure::{
         database::{
@@ -14,6 +14,7 @@ use your_money_left_the_chat::{
             repositories::{
                 bitcoin_flow::BitcoinFlowSqlite, cash_flow::CashFlowSqlite,
                 debt_radar::DebtRadarSqlite, spending_scanner::SpendingScannerSqlite,
+                tax_simulator::TaxSimulatorSqlite,
             },
         },
         mcp_handler::MCPHandler,
@@ -55,11 +56,17 @@ async fn main() -> Result<()> {
         BitcoinFlowUseCase::new(Arc::new(bitcoin_flow_repository))
     };
 
+    let tax_simulator_use_case = {
+        let tax_simulator_repository = TaxSimulatorSqlite::new(Arc::clone(&db_pool_artifact));
+        TaxSimulatorUseCase::new(Arc::new(tax_simulator_repository))
+    };
+
     let service = MCPHandler::new(
         Arc::new(cash_flow_use_case),
         Arc::new(spending_scanner_use_case),
         Arc::new(debt_radar_use_case),
         Arc::new(bitcoin_flow_use_case),
+        Arc::new(tax_simulator_use_case),
     )
     .serve(stdio())
     .await

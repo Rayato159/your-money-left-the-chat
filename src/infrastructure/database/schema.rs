@@ -41,9 +41,18 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    tax_deductions_list (id) {
+        id -> Integer,
+        title -> Text,
+        amount -> Float,
+    }
+}
+
 diesel::allow_tables_to_appear_in_same_query!(
     bitcoin_buy_ledger,
     bitcoin_sell_ledger,
     debt_ledger,
     my_ledger,
+    tax_deductions_list,
 );
