@@ -18,7 +18,6 @@ WORKDIR /app
 
 # Copy binary and database
 COPY --from=builder /usr/src/your-money-left-the-chat/target/release/examples/your_money_left_the_chat /usr/local/bin/your-money-left-the-chat
-COPY --from=builder /usr/src/your-money-left-the-chat/database.db /app/database.db
 
 # Set default command
-CMD ["your-money-left-the-chat", "/database.db"]
+CMD ["your-money-left-the-chat"]
