@@ -34,11 +34,7 @@ impl TaxSimulatorRepository for TaxSimulatorSqlite {
         let conn = &mut self.db_pool.get()?;
 
         let results = my_ledger::table
-            .filter(
-                my_ledger::category
-                    .like("%INCOME%")
-                    .or(my_ledger::category.like("%SALARY%")),
-            )
+            .filter(my_ledger::amount.gt(0.0))
             .filter(my_ledger::date.like(format!("{}%", year)))
             .order(my_ledger::date.desc())
             .select(MyLedger::as_select())
