@@ -1,5 +1,7 @@
 # Your Money Left The Chat
 
+[![smithery badge](https://smithery.ai/badge/@Rayato159/your-money-left-the-chat)](https://smithery.ai/server/@Rayato159/your-money-left-the-chat)
+
 ## 📀 Demo Video
 
 [![Demo Video](./screenshots/demo.png)](https://youtu.be/1X9WQuZ4N5w)
