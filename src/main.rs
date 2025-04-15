@@ -1,4 +1,4 @@
-use std::{env, sync::Arc};
+use std::sync::Arc;
 
 use anyhow::Result;
 use rmcp::{ServiceExt, transport::stdio};
@@ -8,6 +8,7 @@ use your_money_left_the_chat::{
         bitcoin_flow::BitcoinFlowUseCase, cash_flow::CashFlowUseCase, debt_radar::DebtRadarUseCase,
         spending_scanner::SpendingScannerUseCase, tax_simulator::TaxSimulatorUseCase,
     },
+    config,
     infrastructure::{
         database::{
             conn,
@@ -23,7 +24,7 @@ use your_money_left_the_chat::{
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let db_path = env::args().nth(1).expect("arg db_path is required");
+    let config = config::load()?;
 
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::from_default_env().add_directive(tracing::Level::INFO.into()))
@@ -33,7 +34,7 @@ async fn main() -> Result<()> {
 
     tracing::info!("🦀 Let's roll your money.");
 
-    let db_pool = conn(&db_path)?;
+    let db_pool = conn(&config.database_url)?;
     let db_pool_artifact = Arc::new(db_pool);
 
     let cash_flow_use_case = {
