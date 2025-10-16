@@ -1,0 +1,26 @@
+CREATE TABLE bitcoin_sell_ledger (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sell_date TEXT NOT NULL,
+    amount REAL NOT NULL,
+    price REAL NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE bitcoin_buy_ledger (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    buy_date TEXT NOT NULL,
+    amount REAL NOT NULL,
+    price REAL NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE debt_ledger (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    debtor_name TEXT NOT NULL,
+    amount REAL NOT NULL,
+    due_date TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);

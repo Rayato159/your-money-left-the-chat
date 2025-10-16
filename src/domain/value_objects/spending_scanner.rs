@@ -49,7 +49,7 @@ pub struct RemoveMonthlySpendingModel {
     pub id: i32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, schemars::JsonSchema)]
 pub struct MonthlySpendingModel {
     pub id: i32,
     pub title: String,

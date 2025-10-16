@@ -14,27 +14,21 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
 
 ## 🧠 Features
 
-- ✍️ **Natural Language Input**  
+- ✍️ **Natural Language Input**
   Log expenses like:
 
   > “Spent 129 baht on KFC today” → Stored instantly
 
-- 📆 **Smart Summaries**  
+- 📆 **Smart Summaries**
   Daily, monthly, yearly breakdowns, including category-based analytics
 
-- 📊 **Graph View (Only Claude Can Do THIS!!!)**  
+- 📊 **Graph View (Only Claude Can Do THIS!!!)**
   Visualize how much of your soul goes into food every month
 
-- 📉 **Tax Calculation**  
+- 📉 **Tax Calculation**
   Estimate how much you’ll owe Uncle Sam (or whoever)
 
-- 💀 **Debt Management**  
-  Track who owes you money and who’s ghosting you
-
-- 🪙 **Bitcoin Tracking**  
-  Track your Bitcoin investments and their value over time
-
-- 🔒 **Offline & Local-First**  
+- 🔒 **Offline & Local-First**
   100% yours – no internet, no accounts, no surveillance capitalism
 
 ## 🦀 Tech Stack
@@ -48,8 +42,8 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
 
 1. **Install Rust, SQLite, and Makefile**
 
-   Rust: https://www.rust-lang.org/tools/install  
-   SQLite: https://sqlite.org/download.html  
+   Rust: https://www.rust-lang.org/tools/install
+   SQLite: https://sqlite.org/download.html
    GNU Make: https://www.gnu.org/software/make/
 
 2. **Clone the Repo**
@@ -69,8 +63,7 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
 
 4. **Create Sqlite Database**
 
-   Just create file `database.db` in the:
-   `./src/infrastructure/database/sqlite_data/`
+   Just create file `database.db` in any folder you want, or you can use this command
 
 5. **Database Setup**
 
@@ -97,12 +90,12 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
    Or using cargo as original
 
    ```bash
-   cargo build --release --example your_money_left_the_chat
+   cargo build --release --bin your_money_left_the_chat
    ```
 
 7. **Edit the config file**
 
-   If you using Claude Desktop just find the `claude_desktop_config.json`, then add this
+   Find the `config.json`, of your MCP agent then add this
 
    Windows:
 
@@ -110,10 +103,8 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
    {
      "mcpServers": {
        "money": {
-         "command": "PATH-TO/your-money-left-the-chat/target/release/examples/your_money_left_the_chat.exe",
-         "args": [
-           "PATH-TO/your-money-left-the-chat/src/infrastructure/database/sqlite_data/database.db"
-         ]
+         "command": "PATH-TO/your-money-left-the-chat/target/release/your_money_left_the_chat.exe",
+         "args": ["PATH-TO/database.db"]
        }
      }
    }
@@ -125,18 +116,16 @@ Talk to Claude or Ollama, and the system will store everything locally using SQL
    {
      "mcpServers": {
        "money": {
-         "command": "PATH-TO/your-money-left-the-chat/target/release/examples/your_money_left_the_chat",
-         "args": [
-           "PATH-TO/your-money-left-the-chat/src/infrastructure/database/sqlite_data/database.db"
-         ]
+         "command": "PATH-TO/your-money-left-the-chat/target/release/your_money_left_the_chat",
+         "args": ["PATH-TO/database.db"]
        }
      }
    }
    ```
 
-8. **Chatting with your dude (Claude):**
+8. **Chatting with your dude (MCP Agent):**
 
    ```text
     You: "Hey, I spent 129 baht on KFC today"
-    Claude: "Got it! I've logged that expense for you. Anything else?"
+    MCP Agent: "Got it! I've logged that expense for you. Anything else?"
    ```
